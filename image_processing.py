@@ -1,5 +1,4 @@
 import io
-from aws.client import  aws_manager,bucket_name
 from aws.s3.s3 import upload_file
 from PIL import Image
 

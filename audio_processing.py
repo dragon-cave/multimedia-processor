@@ -1,6 +1,5 @@
 import soundfile as sf
-import os, subprocess, json
-from aws.client import aws_manager, bucket_name
+import subprocess, json
 from file_info import get_mime_type
 
 def process_audio(file_name, file_id, download_path):

@@ -1,6 +1,5 @@
 import pyffmpeg, os
 from aws.s3.s3 import upload_file
-from aws.client import  aws_manager, bucket_name
 from file_info import get_file_extension, get_mime_type
 
 def process_video(user_id, file_name, file_id, download_path):
