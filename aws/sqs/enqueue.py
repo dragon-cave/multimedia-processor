@@ -1,9 +1,9 @@
 import json
 import os
-from .sqs import sqsclient
+from aws.client import aws_manager
 # Define the SQS queue URL
 queue_url = os.getenv('QUEUE_URL')
-
+sqsclient=aws_manager.get_sqs_client
 def enqueue_video_processing(s3_bucket, s3_key):
     message_body = {
         'bucket': s3_bucket,
