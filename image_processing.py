@@ -18,7 +18,7 @@ def process_image(user_id, file_name, file_id, download_path):
             
             thumb_buffer.seek(0)
            
-            thumb_key = f'user/{user_id}/files/{file_name}/thumbnail.png'
+            thumb_key = f'users/{user_id}/files/{file_name}/thumbnail.png'
             
             upload_file(thumb_buffer, thumb_key)
 

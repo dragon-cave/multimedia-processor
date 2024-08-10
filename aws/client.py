@@ -1,4 +1,3 @@
-bucket_name = os.getenv('AWS_STORAGE_BUCKET_NAME')
 import boto3
 import os
 from datetime import datetime, timedelta

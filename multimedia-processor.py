@@ -1,4 +1,7 @@
-import os
+from dotenv import load_dotenv
+load_dotenv()
+
+import os, requests
 from aws.sqs.dequeue import dequeue_json_object
 from aws.s3.s3 import download_file
 from file_info import get_mime_type
@@ -7,9 +10,13 @@ from image_processing import process_image
 from video_processing import process_video
 
 def main():
+    backend_url = os.getenv('BACKEND_URL')
     while True:
         try:
             payload = dequeue_json_object()
+
+            if payload is None:
+                continue
 
             file_name = payload['file_name']
             user_id = payload['user_id']
@@ -33,7 +40,10 @@ def main():
 
             os.remove(local_file_path)
 
-            # Send request to the webhook endpoint!
+            # Create a new request to the backend
+
+            url = f'{backend_url}/api/webhook'
+            response = requests.post(url, json=request_data, verify=False)
                     
         except Exception as e:
             print(f"Erro ao receber mensagens do SQS: {str(e)}")

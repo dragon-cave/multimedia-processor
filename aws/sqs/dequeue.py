@@ -9,10 +9,10 @@ def dequeue_json_object():
     """
     try:
         # Receive a message from the queue
-        response = aws_manager.get_sqs_client().receive_sqs_message(
-            queue_url=queue_url,
-            max_number_of_messages=1,  # Retrieve one message
-            wait_time_seconds=10  # Long polling to reduce empty responses
+        response = aws_manager.get_sqs_client().receive_message(
+            QueueUrl=queue_url,
+            MaxNumberOfMessages=1,  # Retrieve one message
+            WaitTimeSeconds=10  # Long polling to reduce empty responses
         )
         
         messages = response.get('Messages', [])
@@ -27,9 +27,9 @@ def dequeue_json_object():
             
             # Delete the message from the queue after processing
             receipt_handle = message['ReceiptHandle']
-            aws_manager.delete_sqs_message(
-                queue_url=queue_url,
-                receipt_handle=receipt_handle
+            aws_manager.get_sqs_client().delete_message(
+                QueueUrl=queue_url,
+                ReceiptHandle=receipt_handle
             )
             
             return json_object

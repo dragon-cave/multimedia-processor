@@ -29,7 +29,7 @@ def process_video(user_id, file_name, file_id, download_path):
             # output_key = f'{label}/{file_name}'
             
             with open(local_output_path, 'rb') as f:
-                output_path = f'user/{user_id}/files/{file_name}/processed/{label}.{extension}'
+                output_path = f'users/{user_id}/files/{file_name}/processed/{label}.{extension}'
                 upload_file(f, output_path)
 
             os.remove(local_output_path)
