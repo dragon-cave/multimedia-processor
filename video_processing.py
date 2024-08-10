@@ -1,45 +1,40 @@
-from aws.s3.s3 import download_file
-import pyffmpeg
+import pyffmpeg, os
+from aws.s3.s3 import upload_file
 from aws.client import  aws_manager, bucket_name
-import os
-from getfileinfo import 
-def process_video(user_id, file_name,file_id):
+from file_info import get_file_extension, get_mime_type
+
+def process_video(user_id, file_name, file_id, download_path):
     try:
-       
-        download_path = f'/tmp/{file_name}'
-        aws_manager.get_s3_client().download_file(bucket_name, file_name, download_path)
-        
-      
-        thumbnail_path = f'users/{user_id}/files/{file_name}'
+        local_thumbnail_path = f'/tmp/{file_name}.png'
         video = pyffmpeg.FFMPEG(download_path)
         info = video.info()
-        video.options('-vf', 'thumbnail,scale=320:240').save(thumbnail_path)
+        video.options('-vf', 'thumbnail,scale=320:240').save(local_thumbnail_path)
+
+        # Read the file as BytesIO
+        with open(local_thumbnail_path, 'rb') as f:
+            thumbnail_path = f'users/{user_id}/files/{file_name}/thumbnail.png'
+            upload_file(f, thumbnail_path)
         
-        
-        thumbnail_key = f'video-thumbnails/{file_name}.png'
-        aws_manager.get_s3_client().upload_file(thumbnail_path, bucket_name, thumbnail_key)
-        
+        os.remove(local_thumbnail_path)
       
         resolutions = {
-            '1080p': '1920:1080',
-            '720p': '1280:720',
-            '480p': '854:480'
+            '1080p': '1080',
+            '720p': '720',
+            '480p': '480'
         }
         
         for label, resolution in resolutions.items():
-            extension=get_file_extension(download_path)
-            output_path = f'user/{user_id}/{label}.{extension}'
-            video.options('-vf', f'scale={resolution}').save(output_path)
-            output_key = f'{label}/{file_name}'
-            aws_manager.get_s3_client().upload_file(output_path, bucket_name, output_key)
-        
-         
-        # Extrair informações do vídeo
-        os.remove(download_path)
-        os.remove(thumbnail_path)
-        for label in resolutions.keys():
-            os.remove(f'/tmp/{label}_{file_name}')
+            extension = get_file_extension(download_path)
+            local_output_path = f'/tmp/{label}.{extension}'
+            video.options('-vf', f'scale=-1:{resolution}').save(local_output_path)
+            # output_key = f'{label}/{file_name}'
+            
+            with open(local_output_path, 'rb') as f:
+                output_path = f'user/{user_id}/files/{file_name}/processed/{label}.{extension}'
+                upload_file(f, output_path)
 
+            os.remove(local_output_path)
+        
         duration = info['duration']
         resolution = info['resolution']
         frame_rate = info['frame_rate']
@@ -48,8 +43,6 @@ def process_video(user_id, file_name,file_id):
         bit_rate = info['bit_rate']
 
         mime_type = get_mime_type(download_path)
-
-        os.remove(download_path)
 
         return {
             "file_id": file_id,

@@ -1,19 +1,10 @@
-import json
-import pyffmpeg
 import os
-from .aws.client import  aws_manager,bucket_name
-from PIL import Image
-import soundfile as  sf
-import pyffmpeg
-import mimetypes
-import io
-from typeverification import get_file_type_by_mimetype
 from aws.sqs.dequeue import dequeue_json_object
 from aws.s3.s3 import download_file
-# Definir a URL da fila SQS
-queue_url = os.getenv('QUEUE_URL')
-s3client=aws_manager.get_s3_client()
-sqsclient=aws_manager.get_sqs_client()
+from file_info import get_mime_type
+from audio_processing import process_audio
+from image_processing import process_image
+from video_processing import process_video
 
 def main():
     while True:
@@ -34,11 +25,11 @@ def main():
             request_data = None
 
             if mime_type.startswith('image/'):
-                request_data = process_image(user_id, file_name, file_id)
+                request_data = process_image(user_id, file_name, file_id, local_file_path)
             elif mime_type.startswith('video/'):
-                request_data = process_video(user_id, file_name, file_id)
+                request_data = process_video(user_id, file_name, file_id, local_file_path)
             elif mime_type.startswith('audio/'):
-                request_data = process_audio(user_id, file_name, file_id)
+                request_data = process_audio(file_name, file_id, local_file_path)
 
             os.remove(local_file_path)
 
