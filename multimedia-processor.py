@@ -40,11 +40,8 @@ def main():
 
             os.remove(local_file_path)
 
-            # Create a new request to the backend
-
-            url = f'{backend_url}/api/webhook'
-            response = requests.post(url, json=request_data, verify=False)
-                    
+            url = f'{backend_url}/api/webhook/'
+            requests.post(url, json=request_data, verify=False)
         except Exception as e:
             print(f"Erro ao receber mensagens do SQS: {str(e)}")
 

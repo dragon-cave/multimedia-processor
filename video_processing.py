@@ -5,7 +5,7 @@ from file_info import get_file_extension, get_mime_type
 def process_video(user_id, file_name, file_id, download_path):
     try:
         local_thumbnail_path = f'/tmp/{file_name}.png'
-        video = pyffmpeg.FFMPEG(download_path)
+        video = pyffmpeg.FFmpeg(download_path)
         info = video.info()
         video.options('-vf', 'thumbnail,scale=320:240').save(local_thumbnail_path)
 
