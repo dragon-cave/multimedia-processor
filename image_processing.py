@@ -3,7 +3,7 @@ import exifread
 from aws.s3.s3 import upload_file
 from PIL import Image
 
-def process_image(user_id, file_name, file_id, download_path):
+def process_image(user_id, file_name, file_id, download_path, mime_type):
     try:
         with Image.open(download_path) as img:
             width, height = img.size
@@ -33,7 +33,7 @@ def process_image(user_id, file_name, file_id, download_path):
 
             return {
                 "file_id": file_id,
-                "mime_type": "image/png",
+                "mime_type": mime_type,
                 "data": {
                     "width": int(width),
                     "height": int(height),

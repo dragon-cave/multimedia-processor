@@ -32,11 +32,11 @@ def main():
             request_data = None
 
             if mime_type.startswith('image/'):
-                request_data = process_image(user_id, file_name, file_id, local_file_path)
+                request_data = process_image(user_id, file_name, file_id, local_file_path, mime_type)
             elif mime_type.startswith('video/'):
-                request_data = process_video(user_id, file_name, file_id, local_file_path)
+                request_data = process_video(user_id, file_name, file_id, local_file_path, mime_type)
             elif mime_type.startswith('audio/'):
-                request_data = process_audio(file_name, file_id, local_file_path)
+                request_data = process_audio(file_name, file_id, local_file_path, mime_type)
 
             os.remove(local_file_path)
 

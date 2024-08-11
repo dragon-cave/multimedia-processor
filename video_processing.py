@@ -46,12 +46,15 @@ def get_video_info(file_path):
         print(f"Error running ffprobe: {str(e)}")
         return None
 
-def process_video(user_id, file_name, file_id, download_path):
+def process_video(user_id, file_name, file_id, download_path, mime_type):
     try:
         # Extract video information
         info = get_video_info(download_path)
         if info is None:
             raise ValueError("Failed to get video information.")
+
+        # Get the file extension
+        file_extension = os.path.splitext(file_name)[1]
 
         # Generate thumbnail
         local_thumbnail_path = f'/tmp/{file_name}.png'
@@ -79,7 +82,7 @@ def process_video(user_id, file_name, file_id, download_path):
         }
 
         for label, resolution in resolutions.items():
-            local_output_path = f'/tmp/{label}.mp4'
+            local_output_path = f'/tmp/{label}{file_extension}'
             command = [
                 'ffmpeg', '-i', download_path,
                 '-vf', f'scale=-2:{resolution}',  # Ensure width is divisible by 2
@@ -91,14 +94,14 @@ def process_video(user_id, file_name, file_id, download_path):
             
             # Upload processed video
             with open(local_output_path, 'rb') as f:
-                output_path = f'users/{user_id}/files/{file_name}/processed/{label}.mp4'
+                output_path = f'users/{user_id}/files/{file_name}/processed/{label}{file_extension}'
                 upload_file(f, output_path)
 
             os.remove(local_output_path)
 
         return {
             "file_id": file_id,
-            "mime_type": "video/mp4",  # Adjust as needed
+            "mime_type": mime_type,
             "data": info
         }
 
