@@ -1,25 +1,36 @@
 import soundfile as sf
-import subprocess, json
+import subprocess
+import json
 from file_info import get_mime_type
 
 def process_audio(file_name, file_id, download_path):
     try:
+        # Use ffprobe to get detailed information about the audio file
         command = ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", download_path]
         output = subprocess.check_output(command).decode()
         probe_data = json.loads(output)
 
+        # Get audio file info using soundfile
         info = sf.info(download_path)
 
+        # Get MIME type
         mime_type = get_mime_type(download_path)
 
+        # Extract necessary details from the probe data and soundfile info
+        duration = float(probe_data['format']['duration'])
+        bit_rate = int(probe_data['format']['bit_rate'])
+        sample_rate = int(info.samplerate)
+        channels = int(info.channels)
+
+        # Return the processed audio details
         return {
             "file_id": file_id,
             "mime_type": mime_type,
             "data": {
-                "duration": int(probe_data['format']['duration']),
-                "bit_rate": int(probe_data['format']['bit_rate']),
-                "sample_rate": int(info['samplerate']),
-                "channels": int(info['channels'])
+                "duration": duration,
+                "bit_rate": bit_rate,
+                "sample_rate": sample_rate,
+                "channels": channels
             }
         }
     except Exception as e:
