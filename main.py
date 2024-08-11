@@ -37,6 +37,12 @@ def main():
                 request_data = process_video(user_id, file_name, file_id, local_file_path, mime_type)
             elif mime_type.startswith('audio/'):
                 request_data = process_audio(file_name, file_id, local_file_path, mime_type)
+            else:
+                request_data = {
+                    "file_id": file_id,
+                    "mime_type": mime_type,
+                    "data": {}
+                }
 
             os.remove(local_file_path)
 
