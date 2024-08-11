@@ -54,7 +54,7 @@ def process_video(user_id, file_name, file_id, download_path):
             raise ValueError("Failed to get video information.")
 
         # Generate thumbnail
-        local_thumbnail_path = f'/tmp/{file_name}.jpg'
+        local_thumbnail_path = f'/tmp/{file_name}.png'
         command = [
             'ffmpeg', '-ss', '00:00:01.00',  # Seek to 1 second
             '-i', download_path,
@@ -66,7 +66,7 @@ def process_video(user_id, file_name, file_id, download_path):
 
         # Upload thumbnail
         with open(local_thumbnail_path, 'rb') as f:
-            thumbnail_path = f'users/{user_id}/files/{file_name}/thumbnail.jpg'
+            thumbnail_path = f'users/{user_id}/files/{file_name}/thumbnail.png'
             upload_file(f, thumbnail_path)
 
         os.remove(local_thumbnail_path)
