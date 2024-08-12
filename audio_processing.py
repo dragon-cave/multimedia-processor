@@ -1,9 +1,8 @@
 import soundfile as sf
 import subprocess
 import json
-from file_info import get_mime_type
 
-def process_audio(file_name, file_id, download_path):
+def process_audio(file_name, file_id, download_path, mime_type):
     try:
         # Use ffprobe to get detailed information about the audio file
         command = ["ffprobe", "-v", "quiet", "-print_format", "json", "-show_format", "-show_streams", download_path]
@@ -12,9 +11,6 @@ def process_audio(file_name, file_id, download_path):
 
         # Get audio file info using soundfile
         info = sf.info(download_path)
-
-        # Get MIME type
-        mime_type = get_mime_type(download_path)
 
         # Extract necessary details from the probe data and soundfile info
         duration = float(probe_data['format']['duration'])
